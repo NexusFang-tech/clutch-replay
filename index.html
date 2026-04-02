@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLUTCH::REPLAY — Fortnite Match Storyteller</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#ff2d78;--purple:#a020f0;--cyan:#00eeff;--yellow:#ffe600;--bg:#07000f;--text:#e8deff;--muted:#7a6a9a;--border:rgba(160,32,240,0.3)}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.5) 100%)}
+.app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:24px 20px}
+h1{font-family:'Orbitron',sans-serif;font-size:28px;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px rgba(0,238,255,0.5);margin-bottom:4px}
+.sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:20px}
+.slbl{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.setup{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sf{display:flex;flex-direction:column;gap:2px}
+.sf label{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.sf input,.sf select{padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:13px;background:rgba(7,0,15,0.8);border:1px solid var(--border);color:var(--cyan);border-radius:3px;outline:none;min-width:80px}
+.sf input:focus,.sf select:focus{border-color:var(--cyan)}
+.sf select{color:var(--cyan);background:rgba(7,0,15,0.8)}
+.sf select option{background:#0d0020;color:var(--text)}
+.moments{margin-bottom:14px}
+.mrow{display:flex;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid rgba(160,32,240,0.1);flex-wrap:wrap}
+.mrow input,.mrow select{padding:4px 8px;font-family:'Share Tech Mono',monospace;font-size:12px;background:rgba(7,0,15,0.8);border:1px solid var(--border);color:var(--cyan);border-radius:3px;outline:none}
+.mrow input:focus,.mrow select:focus{border-color:var(--cyan)}
+.mrow select{background:rgba(7,0,15,0.8)}
+.mrow select option{background:#0d0020}
+.mrow input[type="text"]{flex:1;min-width:120px}
+.mdel{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--muted);cursor:pointer;padding:2px 6px;opacity:0.4}
+.mdel:hover{color:var(--pink);opacity:1}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.play-btn{font-family:'Orbitron',sans-serif;font-size:12px;padding:10px 24px;letter-spacing:1px;text-transform:uppercase;border:2px solid var(--cyan);background:rgba(0,238,255,0.08);color:var(--cyan);cursor:pointer;border-radius:4px;transition:all .2s}
+.play-btn:hover{background:rgba(0,238,255,0.15);box-shadow:0 0 20px rgba(0,238,255,0.3)}
+.abtn{font-family:'Orbitron',sans-serif;font-size:10px;padding:8px 14px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .15s}
+.abtn:hover{border-color:var(--cyan);color:var(--cyan)}
+.canvas-wrap{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:12px;background:#0a0014}
+.canvas-wrap canvas{display:block;width:100%;height:400px}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.controls button{font-family:'Orbitron',sans-serif;font-size:10px;padding:6px 14px;letter-spacing:1px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:3px}
+.controls button:hover{border-color:var(--cyan);color:var(--cyan)}
+input[type="range"]{-webkit-appearance:none;flex:1;height:4px;background:var(--border);border-radius:2px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--cyan);cursor:pointer}
+.clock{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--cyan);min-width:50px;text-align:right}
+.comm{background:rgba(13,0,32,0.85);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
+.comm-lbl{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.comm-txt{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:500;color:var(--text);font-style:italic;line-height:1.5}
+.share{background:rgba(7,0,15,0.8);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);white-space:pre-wrap;display:none;margin-bottom:12px}
+.footer{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);padding:16px 0}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>CLUTCH::REPLAY</h1>
+<div class="sub">MATCH STORYTELLER // CH7 S2 // NEXUSFANG-TECH</div>
+<div class="slbl">Match Info</div>
+<div class="setup">
+<div class="sf"><label>Player</label><input type="text" id="cr-player" value="NexusFang"></div>
+<div class="sf"><label>Mode</label><select id="cr-mode"><option>Solo</option><option>Duos</option><option selected>Trios</option><option>Squads</option></select></div>
+<div class="sf"><label>Placement</label><input type="number" id="cr-place" value="1" min="1" max="100"></div>
+<div class="sf"><label>Total Kills</label><input type="number" id="cr-kills" value="8" min="0"></div>
+<div class="sf"><label>Match Time</label><input type="text" id="cr-time" value="22:15" placeholder="mm:ss"></div>
+</div>
+<div class="slbl">Key Moments</div>
+<div class="moments" id="moments">
+<div class="mrow"><input type="text" value="2:30" style="width:55px" class="mt"><select class="mtype"><option value="kill" selected>Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm">Storm</option><option value="clutch">Clutch</option></select><input type="text" value="Eliminated Player_247 with Chaos Reloader" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+<div class="mrow"><input type="text" value="5:10" style="width:55px" class="mt"><select class="mtype"><option value="kill" selected>Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm">Storm</option><option value="clutch">Clutch</option></select><input type="text" value="Eliminated TTV_Sweat99 with Vector 7 DMR headshot" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+<div class="mrow"><input type="text" value="8:45" style="width:55px" class="mt"><select class="mtype"><option value="kill">Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate" selected>Rotate</option><option value="storm">Storm</option><option value="clutch">Clutch</option></select><input type="text" value="Storm rotating Frigid Fortress to Dark Dominion" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+<div class="mrow"><input type="text" value="14:20" style="width:55px" class="mt"><select class="mtype"><option value="kill" selected>Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm">Storm</option><option value="clutch">Clutch</option></select><input type="text" value="Triple kill on squad pushing north — Nemesis AR spray" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+<div class="mrow"><input type="text" value="18:00" style="width:55px" class="mt"><select class="mtype"><option value="kill">Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm" selected>Storm</option><option value="clutch">Clutch</option></select><input type="text" value="Storm surge — 15 alive, holding high ground" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+<div class="mrow"><input type="text" value="21:30" style="width:55px" class="mt"><select class="mtype"><option value="kill">Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm">Storm</option><option value="clutch" selected>Clutch</option></select><input type="text" value="1v1 final circle — Chaos Reloader 180 flick for the VR" class="md"><span class="mdel" onclick="dm(this)">x</span></div>
+</div>
+<div class="actions">
+<button class="play-btn" id="play">Play Replay</button>
+<button class="abtn" id="addbtn">Add Moment</button>
+<button class="abtn" id="sharebtn">Copy Match Report</button>
+</div>
+<div class="canvas-wrap"><canvas id="cv"></canvas></div>
+<div class="controls">
+<button id="pp">Pause</button>
+<input type="range" id="prog" min="0" max="100" value="0" step="0.5">
+<span class="clock" id="clock">0:00</span>
+</div>
+<div class="comm"><div class="comm-lbl">Commentary</div><div class="comm-txt" id="commtxt">Hit play to start the replay...</div></div>
+<div class="share" id="share"></div>
+<div class="footer">CLUTCH::REPLAY v1.0 // NexusFang-Tech</div>
+</div>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');let W,H;
+function resize(){W=cv.width=cv.offsetWidth*2;H=cv.height=cv.offsetHeight*2;ctx.scale(2,2)}resize();
+let playing=false,paused=false,playStart=0,matchDur=0,curTime=0,moments=[],lastCI=-1;
+const tColors={kill:'#ff2d78',knocked:'#ff9944',revive:'#00eeff',rotate:'#a020f0',storm:'#ffe600',clutch:'#00ff88'};
+const tLabels={kill:'ELIMINATION',knocked:'KNOCKED',revive:'REVIVE',rotate:'ROTATION',storm:'STORM',clutch:'CLUTCH MOMENT'};
+const comms={kill:["Absolutely deleted them.","Clean elim. That's cracked aim.","Another one falls.","Surgical. They didn't see it coming.","No chance to react. Just gone."],knocked:["Teammate down! Need to play smart.","That's going to make things interesting."],revive:["Back in the fight. Squad's alive again.","Clutch revive — game changer."],rotate:["Smart rotation. Veteran game sense.","Moving early — positioning is everything."],storm:["Storm closing. Time to make moves.","Circle tight. Every decision matters now."],clutch:["THIS IS IT. Everything comes down to this.","ABSOLUTELY UNREAL. Highlight reel.","ICE IN THE VEINS. Clutch factor maxed.","WHAT A PLAY. That's going on the montage."]};
+function parseMoments(){moments=[];document.querySelectorAll('.mrow').forEach(r=>{const t=r.querySelector('.mt')?.value||'0:00';const tp=r.querySelector('.mtype')?.value||'kill';const d=r.querySelector('.md')?.value||'';const p=t.split(':');moments.push({time:(parseInt(p[0])||0)*60+(parseInt(p[1])||0),timeStr:t,type:tp,desc:d})});moments.sort((a,b)=>a.time-b.time)}
+function parseMatchTime(){const t=document.getElementById('cr-time').value.split(':');return(parseInt(t[0])||0)*60+(parseInt(t[1])||0)}
+function fmtTime(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0')}
+function getComm(type){const p=comms[type]||comms.kill;return p[Math.floor(Math.random()*p.length)]}
+function drawFrame(t){const w=W/2,h=H/2;ctx.clearRect(0,0,w,h);
+const bg=ctx.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#0a0014');bg.addColorStop(1,'#0d0020');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='rgba(160,32,240,0.06)';ctx.lineWidth=0.5;for(let x=0;x<w;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+const player=document.getElementById('cr-player').value,mode=document.getElementById('cr-mode').value,place=parseInt(document.getElementById('cr-place').value)||1,pct=matchDur>0?t/matchDur:0;
+ctx.font='bold 16px Orbitron,sans-serif';ctx.fillStyle='#fff';ctx.textAlign='left';ctx.fillText(player,14,28);
+ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText(mode+' | Ch7 S2 Showdown',14,44);
+ctx.textAlign='right';const alive=Math.max(1,Math.round(100-pct*(100-place)));
+ctx.font='bold 24px Orbitron,sans-serif';ctx.fillStyle=pct>=0.98?'#ffe600':'#fff';ctx.fillText('#'+(pct>=0.98?place:alive),w-14,30);
+ctx.font='11px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText(alive+' alive',w-14,46);
+const ks=moments.filter(m=>m.type==='kill'&&m.time<=t).length;ctx.textAlign='left';ctx.font='bold 14px Orbitron,sans-serif';ctx.fillStyle='#ff2d78';ctx.fillText(ks+' elims',14,h-60);
+ctx.font='12px "Share Tech Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fillText(fmtTime(t)+' / '+fmtTime(matchDur),14,h-44);
+const tlY=h-36,tlH=24,tlP=14;ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,tlY,w,tlH+12);ctx.fillStyle='rgba(160,32,240,0.15)';ctx.fillRect(tlP,tlY+6,w-tlP*2,tlH);
+const progW=(w-tlP*2)*pct;ctx.fillStyle='rgba(0,238,255,0.25)';ctx.fillRect(tlP,tlY+6,progW,tlH);
+moments.forEach(m=>{const mx=tlP+(m.time/matchDur)*(w-tlP*2);ctx.fillStyle=tColors[m.type]||'#fff';ctx.globalAlpha=m.time<=t?1:0.3;ctx.fillRect(mx-1,tlY+4,3,tlH+4);ctx.globalAlpha=1});
+ctx.fillStyle='#00eeff';ctx.fillRect(tlP+progW-1,tlY+2,3,tlH+8);
+const recent=moments.filter(m=>m.time<=t&&m.time>=t-8);ctx.textAlign='right';
+recent.slice(-3).forEach((m,i)=>{const age=t-m.time,alpha=Math.max(0,1-age/8);ctx.globalAlpha=alpha;ctx.font='12px "Share Tech Mono",monospace';const tw=ctx.measureText(m.desc).width;ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(w-tw-24,58+i*22-12,tw+16,18);ctx.fillStyle=tColors[m.type]||'#fff';ctx.fillText(m.desc,w-14,58+i*22);ctx.globalAlpha=1});
+const ae=moments.find(m=>Math.abs(m.time-t)<1.5);
+if(ae){const fl=1-Math.abs(ae.time-t)/1.5;ctx.globalAlpha=fl*0.9;ctx.textAlign='center';ctx.font='bold 11px Orbitron,sans-serif';ctx.fillStyle=tColors[ae.type]||'#fff';ctx.fillText(tLabels[ae.type]||'',w/2,h/2-14);ctx.font='500 15px Rajdhani,sans-serif';ctx.fillStyle='#fff';ctx.fillText(ae.desc.substring(0,55),w/2,h/2+6);if(ae.desc.length>55)ctx.fillText(ae.desc.substring(55),w/2,h/2+24);ctx.globalAlpha=1}}
+function updateComm(t){const idx=moments.findIndex(m=>Math.abs(m.time-t)<2);if(idx!==-1&&idx!==lastCI){lastCI=idx;document.getElementById('commtxt').textContent=getComm(moments[idx].type)}}
+function loop(){if(!playing||paused)return;const el=(Date.now()-playStart)/1000*3;curTime=Math.min(el,matchDur);document.getElementById('prog').value=(curTime/matchDur*100).toFixed(1);document.getElementById('clock').textContent=fmtTime(curTime);drawFrame(curTime);updateComm(curTime);
+if(curTime>=matchDur){playing=false;document.getElementById('pp').textContent='Replay';const p=document.getElementById('cr-place').value;document.getElementById('commtxt').textContent=p==='1'?'VICTORY ROYALE! What a performance.':'#'+p+' finish. GGs only.';return}requestAnimationFrame(loop)}
+document.getElementById('play').addEventListener('click',()=>{parseMoments();matchDur=parseMatchTime();if(matchDur<=0)return;playing=true;paused=false;playStart=Date.now();lastCI=-1;document.getElementById('pp').textContent='Pause';document.getElementById('commtxt').textContent='Match starting...';loop()});
+document.getElementById('pp').addEventListener('click',()=>{if(!playing&&curTime>=matchDur){playStart=Date.now();curTime=0;playing=true;paused=false;lastCI=-1;document.getElementById('pp').textContent='Pause';loop()}else{paused=!paused;document.getElementById('pp').textContent=paused?'Resume':'Pause';if(!paused){playStart=Date.now()-curTime/3*1000;loop()}}});
+document.getElementById('prog').addEventListener('input',e=>{const pct=parseFloat(e.target.value)/100;curTime=pct*matchDur;playStart=Date.now()-curTime/3*1000;document.getElementById('clock').textContent=fmtTime(curTime);drawFrame(curTime);updateComm(curTime)});
+document.getElementById('addbtn').addEventListener('click',()=>{const d=document.createElement('div');d.className='mrow';d.innerHTML='<input type="text" value="" style="width:55px" class="mt" placeholder="0:00"><select class="mtype"><option value="kill">Kill</option><option value="knocked">Knocked</option><option value="revive">Revive</option><option value="rotate">Rotate</option><option value="storm">Storm</option><option value="clutch">Clutch</option></select><input type="text" value="" class="md" placeholder="What happened"><span class="mdel" onclick="dm(this)">x</span>';document.getElementById('moments').appendChild(d)});
+window.dm=function(el){el.closest('.mrow').remove()};
+document.getElementById('sharebtn').addEventListener('click',()=>{parseMoments();const p=document.getElementById('cr-player').value,mode=document.getElementById('cr-mode').value,place=document.getElementById('cr-place').value,kills=document.getElementById('cr-kills').value,time=document.getElementById('cr-time').value;let txt=`CLUTCH::REPLAY\n${p} | ${mode} | #${place} | ${kills} elims | ${time}\n\n`;moments.forEach(m=>{txt+=`[${m.timeStr}] ${tLabels[m.type]}: ${m.desc}\n`});txt+='\nnexusfang-tech.github.io/clutch-replay';navigator.clipboard?.writeText(txt);const s=document.getElementById('share');s.style.display='block';s.textContent=txt});
+drawFrame(0);
+</script>
+</body>
+</html>
